@@ -1,13 +1,18 @@
 from lineBot_api import *
 from flask import url_for
+from wiki_crawler import *
+
 import json
 
 #共用變數
-celebName = '林柏廷'
+celebName = 'Robert Downey Jr.'
 basicStr = '告訴我他的基本資料ㄅ'
 filmStr = '真想知道他演了什麼...'
 socialStr = '哀居拿來!'
 newsStr = '八卦一下好了'
+
+celebImageURL = ""
+soup = BeautifulSoup()
 
 #快速回覆選單
 quickReplyMessage = TextSendMessage(
@@ -34,15 +39,17 @@ def face_result(event):
     '''
         傳送辨識完成後的訊息
     '''
-    print(url_for('static', filename='image.png', _scheme='https', _external=True))
-    print('\n\n\n\n')
-    celebName = "林柏廷"
-    imageURL = "https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2022/11/25/0/19529482.jpg&x=0&y=0&sw=0&sh=0&sl=W&fw=750"
+    global celebName
+    global celebImageURL
+    global soup
+    celebName = "Robert Downey Jr."
+    soup = BeautifulSoup(requests.get(GetWikiURL(celebName)).text, "html.parser")
+    
+    celebImageURL = GetWikiPhotoURL(soup)
     buttonsMessage = TemplateSendMessage(
         alt_text='Buttons template',
         template=ButtonsTemplate(
-            # thumbnail_image_url=url_for('static', filename='image.png', _scheme='https', _external=True),
-            thumbnail_image_url=imageURL,
+            thumbnail_image_url=celebImageURL,
             title=f'我看出他是{celebName}了，哈!!',
             text='你想知道關於他的什麼事?\n或是要重新傳圖片也行的!',
             actions=[
@@ -72,16 +79,20 @@ def basic(event):
     '''
         傳送基本資料訊息
     '''
-    height, weight, born, nationality, spouse = "180", "61", "2003/06/07", "台灣", "無" 
-    image = "https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2022/11/25/0/19529482.jpg&x=0&y=0&sw=0&sh=0&sl=W&fw=750"
+    height, weight, born, nationality, spouse = "180", "61", GetBirthDay(soup), "台灣", "無" 
     messages = []
 
     with open('static/basicJson.txt', 'r', encoding='UTF-8') as f:
         s=f.read()
     message = json.loads(s)
 
-    message['hero']['url'] = image
+    message['hero']['url'] = celebImageURL
     message['body']['contents'][0]['text'] = celebName
+    message['body']['contents'][1]['contents'][0]['contents'][1]['text'] = height
+    message['body']['contents'][1]['contents'][1]['contents'][1]['text'] = weight
+    message['body']['contents'][1]['contents'][2]['contents'][1]['text'] = born
+    message['body']['contents'][1]['contents'][3]['contents'][1]['text'] = nationality
+    message['body']['contents'][1]['contents'][4]['contents'][1]['text'] = spouse
 
     flexMessage = FlexSendMessage(
         alt_text='hi',
@@ -95,7 +106,27 @@ def film(event):
     '''
         傳送出演作品訊息
     '''
-    message = ''
+    filmURL, filmTitle, filmYear = [], GetLatestMovies(GetIMDbPersonID(celebName)), []
+    print(filmTitle)
+    messages = []
+
+    with open('static/filmJson.txt', 'r', encoding='UTF-8') as f:
+        s=f.read()
+    message = json.loads(s)
+
+    # message['contents'][0]['body']['contents'][0]['url'] = filmURL[0]
+    # message['contents'][1]['body']['contents'][0]['url'] = filmURL[1]
+    # message['contents'][2]['body']['contents'][0]['url'] = filmURL[2]
+
+    # message['contents'][0]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = '0'
+    # message['contents'][1]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = '0'
+    # message['contents'][2]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = '0'
+
+    # message['contents'][0]['body']['contents'][1]['contents'][1]['contents']['text'] = filmYear[0]
+    # message['contents'][1]['body']['contents'][1]['contents'][1]['contents']['text'] = filmYear[1]
+    # message['contents'][2]['body']['contents'][1]['contents'][1]['contents']['text'] = filmYear[2]
+
+
     flexMessage = FlexSendMessage(
         alt_text='hi',
         contents=message
@@ -108,6 +139,7 @@ def social(event):
     '''
         傳送社交軟體訊息
     '''
+    messages = []
     message = ''
     flexMessage = FlexSendMessage(
         alt_text='hi',
@@ -121,6 +153,7 @@ def news(event):
     '''
         傳送最近新聞訊息
     '''
+    messages = []
     message = ''
     flexMessage = FlexSendMessage(
         alt_text='hi',
