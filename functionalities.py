@@ -7,7 +7,7 @@ import json
 #共用變數
 celebName = 'Robert Downey Jr.'
 basicStr = '告訴我他的基本資料ㄅ'
-filmStr = '真想知道他演了什麼...'
+filmStr = '真想知道他最近演了什麼...'
 socialStr = '哀居拿來!'
 newsStr = '八卦一下好了'
 
@@ -44,7 +44,6 @@ def face_result(event):
     global soup
     celebName = "Robert Downey Jr."
     soup = BeautifulSoup(requests.get(GetWikiURL(celebName)).text, "html.parser")
-    
     celebImageURL = GetWikiPhotoURL(soup)
     buttonsMessage = TemplateSendMessage(
         alt_text='Buttons template',
@@ -58,7 +57,7 @@ def face_result(event):
                     text=basicStr
                 ),
                 MessageAction(
-                    label='出演作品',
+                    label='最新作品',
                     text=filmStr
                 ),
                 MessageAction(
@@ -106,9 +105,16 @@ def film(event):
     '''
         傳送出演作品訊息
     '''
-    filmURL, filmTitle, filmYear = [], GetLatestMovies(GetIMDbPersonID(celebName)), []
-    print(filmTitle)
+    filmURL, filmTitle, filmYear = [], [], []
+    for i in range(0, 3):
+        movie = GetLatestMovies(GetIMDbPersonID(celebName))[i]['long imdb title']
+        filmTitle.append(movie[0 : movie.index('(') - 1])
+        year = movie[movie.index('(') + 1 : movie.index(')')]
+        if year == 'None':
+            filmYear.append('尚未上映')
+        else: filmYear.append(year)
     messages = []
+    
 
     with open('static/filmJson.txt', 'r', encoding='UTF-8') as f:
         s=f.read()
@@ -118,14 +124,13 @@ def film(event):
     # message['contents'][1]['body']['contents'][0]['url'] = filmURL[1]
     # message['contents'][2]['body']['contents'][0]['url'] = filmURL[2]
 
-    # message['contents'][0]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = '0'
-    # message['contents'][1]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = '0'
-    # message['contents'][2]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = '0'
+    message['contents'][0]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = filmTitle[0]
+    message['contents'][1]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = filmTitle[1]
+    message['contents'][2]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = filmTitle[2]
 
-    # message['contents'][0]['body']['contents'][1]['contents'][1]['contents']['text'] = filmYear[0]
-    # message['contents'][1]['body']['contents'][1]['contents'][1]['contents']['text'] = filmYear[1]
-    # message['contents'][2]['body']['contents'][1]['contents'][1]['contents']['text'] = filmYear[2]
-
+    message['contents'][0]['body']['contents'][1]['contents'][1]['contents'][0]['text'] = filmYear[0]
+    message['contents'][1]['body']['contents'][1]['contents'][1]['contents'][0]['text'] = filmYear[1]
+    message['contents'][2]['body']['contents'][1]['contents'][1]['contents'][0]['text'] = filmYear[2]
 
     flexMessage = FlexSendMessage(
         alt_text='hi',
