@@ -47,26 +47,23 @@ def handle_message(event):
     '''
         處理訊息事件
     '''
+    print(celebName)
     if event.message.type == 'image':
         with open('.\\static\\image.png', 'wb') as f:
             f.write(line_bot_api.get_message_content(event.message.id).content)
         face_result(event)
-    
     if event.message.type == 'text':
-        if celebName == '無':
-            line_bot_api.reply_message(event.reply_token, TextMessage(text='請傳送圖片歐~'))
+        command = event.message.text
+        if command == basicStr:
+            basic(event)
+        elif command == filmStr:
+            film(event)
+        elif command == socialStr:
+            social(event)
+        elif command == newsStr:
+            news(event)
         else:
-            command = event.message.text
-            if command == basicStr:
-                basic(event)
-            elif command == filmStr:
-                film(event)
-            elif command == socialStr:
-                social(event)
-            elif command == newsStr:
-                news(event)
-            else:
-                sorry(event)
+            sorry(event)
 
 
 # run app

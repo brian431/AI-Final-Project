@@ -4,8 +4,8 @@ from wiki_crawler import *
 
 import json
 
-#共用變數
-celebName = 'Robert Downey Jr.'
+# 共用變數
+celebName = '無'
 basicStr = '告訴我他的基本資料ㄅ'
 filmStr = '真想知道他最近演了什麼...'
 socialStr = '哀居拿來!'
@@ -14,7 +14,7 @@ newsStr = '八卦一下好了'
 celebImageURL = ""
 soup = BeautifulSoup()
 
-#快速回覆選單
+# 快速回覆選單
 quickReplyMessage = TextSendMessage(
         text='你還想要知道什麼關於他的什麼嗎??',
         quick_reply=QuickReply(
@@ -35,6 +35,7 @@ quickReplyMessage = TextSendMessage(
         )
     )
 
+
 def face_result(event):
     '''
         傳送辨識完成後的訊息
@@ -42,8 +43,9 @@ def face_result(event):
     global celebName
     global celebImageURL
     global soup
-    celebName = "Robert Downey Jr."
-    soup = BeautifulSoup(requests.get(GetWikiURL(celebName)).text, "html.parser")
+    celebName = "keanu reaves"
+    soup = BeautifulSoup(requests.get(
+        GetWikiURL(celebName)).text, "html.parser")
     celebImageURL = GetWikiPhotoURL(soup)
     buttonsMessage = TemplateSendMessage(
         alt_text='Buttons template',
@@ -78,11 +80,12 @@ def basic(event):
     '''
         傳送基本資料訊息
     '''
-    height, weight, born, nationality, spouse = "180", "61", GetBirthDay(soup), "台灣", "無" 
+    height, weight, born, nationality, spouse = "180", "61", GetBirthDay(
+        soup), "台灣", "無"
     messages = []
 
     with open('static/basicJson.txt', 'r', encoding='UTF-8') as f:
-        s=f.read()
+        s = f.read()
     message = json.loads(s)
 
     message['hero']['url'] = celebImageURL
@@ -105,24 +108,30 @@ def film(event):
     '''
         傳送出演作品訊息
     '''
+    imdb.Movie.Movie
     filmURL, filmTitle, filmYear = [], [], []
+    movies = GetLatestMovies(GetIMDbPersonID(celebName))
     for i in range(0, 3):
-        movie = GetLatestMovies(GetIMDbPersonID(celebName))[i]['long imdb title']
-        filmTitle.append(movie[0 : movie.index('(') - 1])
-        year = movie[movie.index('(') + 1 : movie.index(')')]
+        if movies[i] == 'none': continue
+        movieStr = movies[i]['long imdb title']
+        filmTitle.append(movieStr[0: movieStr.index('(') - 1])
+        year = movieStr[movieStr.index('(') + 1: movieStr.index(')')]
         if year == 'None':
             filmYear.append('尚未上映')
         else: filmYear.append(year)
+        movieImg = GetIMDbMovieImg(movies[i].movieID)
+        if movieImg == 'no thumbnail':
+            filmURL.append('https://www.macmillandictionary.com/us/external/slideshow/full/Grey_full.png')
+        else: filmURL.append(movieImg)
     messages = []
-    
 
     with open('static/filmJson.txt', 'r', encoding='UTF-8') as f:
-        s=f.read()
+        s = f.read()
     message = json.loads(s)
 
-    # message['contents'][0]['body']['contents'][0]['url'] = filmURL[0]
-    # message['contents'][1]['body']['contents'][0]['url'] = filmURL[1]
-    # message['contents'][2]['body']['contents'][0]['url'] = filmURL[2]
+    message['contents'][0]['body']['contents'][0]['url'] = filmURL[0]
+    message['contents'][1]['body']['contents'][0]['url'] = filmURL[1]
+    message['contents'][2]['body']['contents'][0]['url'] = filmURL[2]
 
     message['contents'][0]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = filmTitle[0]
     message['contents'][1]['body']['contents'][1]['contents'][0]['contents'][0]['text'] = filmTitle[1]
@@ -145,12 +154,36 @@ def social(event):
         傳送社交軟體訊息
     '''
     messages = []
-    message = ''
-    flexMessage = FlexSendMessage(
-        alt_text='hi',
-        contents=message
+
+    image_carousel_template_message = TemplateSendMessage(
+        alt_text='ImageCarousel template',
+        template=ImageCarouselTemplate(
+            columns=[
+                ImageCarouselColumn(
+                    image_url='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyEIbO969AFYuv4KPFhH_74lDZu8aYQtKLjg&usqp=CAU',
+                    action=URIAction(
+                        label='facebook',
+                        uri='https://www.google.com/search?q=facebook+icon&rlz=1C1GCEA_enTW955TW955&sxsrf=ALiCzsbNQO_GfzL6uKttyikKu_QY2H4seg:1671524651289&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiW6crI4of8AhUHSPUHHceAA9EQ_AUoAXoECAEQAw&biw=1638&bih=838&dpr=1.56'
+                    )
+                ),
+                ImageCarouselColumn(
+                    image_url='https://cdn-icons-png.flaticon.com/512/124/124021.png',
+                    action=URIAction(
+                        label='twitter',
+                        uri='https://www.google.com/search?q=facebook+icon&rlz=1C1GCEA_enTW955TW955&sxsrf=ALiCzsbNQO_GfzL6uKttyikKu_QY2H4seg:1671524651289&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiW6crI4of8AhUHSPUHHceAA9EQ_AUoAXoECAEQAw&biw=1638&bih=838&dpr=1.56'
+                    )
+                ),
+                ImageCarouselColumn(
+                    image_url=url_for('static', filename='ig.png', _scheme='https'),
+                    action=URIAction(
+                        label='instagram',
+                        uri='https://www.google.com/search?q=facebook+icon&rlz=1C1GCEA_enTW955TW955&sxsrf=ALiCzsbNQO_GfzL6uKttyikKu_QY2H4seg:1671524651289&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiW6crI4of8AhUHSPUHHceAA9EQ_AUoAXoECAEQAw&biw=1638&bih=838&dpr=1.56'
+                    )
+                )
+            ]
+        )
     )
-    messages.extend([flexMessage, quickReplyMessage])
+    messages.extend([image_carousel_template_message, quickReplyMessage])
     line_bot_api.reply_message(event.reply_token, messages)
 
 
@@ -158,13 +191,35 @@ def news(event):
     '''
         傳送最近新聞訊息
     '''
-    messages = []
-    message = ''
-    flexMessage = FlexSendMessage(
-        alt_text='hi',
-        contents=message
+    messages=[]
+    
+    buttons_template_message = TemplateSendMessage(
+        alt_text='Buttons template',
+        template=ButtonsTemplate(
+            title='最近新聞',
+            text='來看看有什麼新聞...',
+            actions=[
+                URIAction(
+                label='查詢官網',
+                uri='https://www.ncu.edu.tw/'
+                ),
+                URIAction(
+                label='查詢官網',
+                uri='https://www.ncu.edu.tw/'
+                ),
+                URIAction(
+                label='查詢官網',
+                uri='https://www.ncu.edu.tw/'
+                ),
+                URIAction(
+                label='查詢官網',
+                uri='https://www.ncu.edu.tw/'
+                )
+            ]
+        )
     )
-    messages.extend([flexMessage, quickReplyMessage])
+
+    messages.extend([buttons_template_message, quickReplyMessage])
     line_bot_api.reply_message(event.reply_token, messages)
 
 
@@ -172,10 +227,11 @@ def sorry(event):
     '''
         傳送抱歉訊息
     '''
-    messages = []
-    textMessage = TextMessage(text='我聽不懂，再說一次啦')
-    messages.append(textMessage)
-    messages.append(quickReplyMessage)
-    line_bot_api.reply_message(event.reply_token, messages)
-
-
+    messages=[]
+    if celebName != '無':
+        textMessage=TextMessage(text='我聽不懂，再說一次啦')
+        messages.append(textMessage)
+        messages.append(quickReplyMessage)
+        line_bot_api.reply_message(event.reply_token, messages)
+    else:
+        line_bot_api.reply_message(event.reply_token, TextMessage(text='請傳送圖片歐'))
