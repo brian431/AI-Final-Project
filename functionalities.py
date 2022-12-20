@@ -112,7 +112,11 @@ def film(event):
     filmURL, filmTitle, filmYear = [], [], []
     movies = GetLatestMovies(GetIMDbPersonID(celebName))
     for i in range(0, 3):
-        if movies[i] == 'none': continue
+        if movies[i] == 'none': 
+            filmURL.append('https://www.macmillandictionary.com/us/external/slideshow/full/Grey_full.png')
+            filmTitle.append('尚無資訊')
+            filmYear.append('尚未上映')
+            continue
         movieStr = movies[i]['long imdb title']
         filmTitle.append(movieStr[0: movieStr.index('(') - 1])
         year = movieStr[movieStr.index('(') + 1: movieStr.index(')')]
