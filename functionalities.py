@@ -43,7 +43,7 @@ def face_result(event):
     global celebName
     global celebImageURL
     global soup
-    celebName = "keanu reaves"
+    celebName = "keanu_reeves"
     soup = BeautifulSoup(requests.get(
         GetWikiURL(celebName)).text, "html.parser")
     celebImageURL = GetWikiPhotoURL(soup)
@@ -158,7 +158,7 @@ def social(event):
         傳送社交軟體訊息
     '''
     messages = []
-
+    print("celebName is" + celebName)
     image_carousel_template_message = TemplateSendMessage(
         alt_text='ImageCarousel template',
         template=ImageCarouselTemplate(
@@ -167,21 +167,14 @@ def social(event):
                     image_url='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyEIbO969AFYuv4KPFhH_74lDZu8aYQtKLjg&usqp=CAU',
                     action=URIAction(
                         label='facebook',
-                        uri='https://www.google.com/search?q=facebook+icon&rlz=1C1GCEA_enTW955TW955&sxsrf=ALiCzsbNQO_GfzL6uKttyikKu_QY2H4seg:1671524651289&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiW6crI4of8AhUHSPUHHceAA9EQ_AUoAXoECAEQAw&biw=1638&bih=838&dpr=1.56'
+                        uri='https://www.facebook.com/search/top?q=' + celebName
                     )
                 ),
                 ImageCarouselColumn(
                     image_url='https://cdn-icons-png.flaticon.com/512/124/124021.png',
                     action=URIAction(
                         label='twitter',
-                        uri='https://www.google.com/search?q=facebook+icon&rlz=1C1GCEA_enTW955TW955&sxsrf=ALiCzsbNQO_GfzL6uKttyikKu_QY2H4seg:1671524651289&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiW6crI4of8AhUHSPUHHceAA9EQ_AUoAXoECAEQAw&biw=1638&bih=838&dpr=1.56'
-                    )
-                ),
-                ImageCarouselColumn(
-                    image_url=url_for('static', filename='ig.png', _scheme='https'),
-                    action=URIAction(
-                        label='instagram',
-                        uri='https://www.google.com/search?q=facebook+icon&rlz=1C1GCEA_enTW955TW955&sxsrf=ALiCzsbNQO_GfzL6uKttyikKu_QY2H4seg:1671524651289&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiW6crI4of8AhUHSPUHHceAA9EQ_AUoAXoECAEQAw&biw=1638&bih=838&dpr=1.56'
+                        uri='https://twitter.com/search?q=' + celebName + '&src=typed_query'
                     )
                 )
             ]
@@ -196,7 +189,18 @@ def news(event):
         傳送最近新聞訊息
     '''
     messages=[]
-    
+    news = getNews(celebName)
+    if len(news) == 0 or None in news:
+        news = ['查無資訊', 'https://people.com/celebrity/', '查無資訊', 'https://people.com/celebrity/', '查無資訊', 'https://people.com/celebrity/']
+    if len(news[0]) > 20: news[0] = news[0][0 : 19]
+    if len(news[2]) > 20: news[2] = news[2][0 : 19]
+    if len(news[4]) > 20: news[4] = news[4][0 : 19]
+    print(news[0])
+    print(news[1])
+    print(news[2])
+    print(news[3])
+    print(news[4])
+    print(news[5])
     buttons_template_message = TemplateSendMessage(
         alt_text='Buttons template',
         template=ButtonsTemplate(
@@ -204,20 +208,16 @@ def news(event):
             text='來看看有什麼新聞...',
             actions=[
                 URIAction(
-                label='查詢官網',
-                uri='https://www.ncu.edu.tw/'
+                label=news[0],
+                uri=news[1]
                 ),
                 URIAction(
-                label='查詢官網',
-                uri='https://www.ncu.edu.tw/'
+                label=news[2],
+                uri=news[3]
                 ),
                 URIAction(
-                label='查詢官網',
-                uri='https://www.ncu.edu.tw/'
-                ),
-                URIAction(
-                label='查詢官網',
-                uri='https://www.ncu.edu.tw/'
+                label=news[4],
+                uri=news[5]
                 )
             ]
         )

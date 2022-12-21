@@ -81,3 +81,30 @@ def search_twitter(query,bearer_token = BEARER_TOKEN):
         return "https://twitter.com/" + name["data"][0]["username"]
     except:
         return ""
+
+def getNews(Name):
+
+    search_result = requests.get("https://people.com/search?q=" + Name)
+
+    answer = []
+    try:
+        soup = BeautifulSoup(search_result.text, "html.parser")
+        a = soup.find("main").find("div",id="search-results_1-0")
+        f = a.find("a",id="mntl-card-list-items_1-0")
+        s = a.find("a",id="mntl-card-list-items_1-0-1")
+        t = a.find("a",id="mntl-card-list-items_1-0-2")
+
+        answer.append(f.find("div",class_="card__content").find("span",class_="card__title-text").text)
+        answer.append(f["href"])
+
+        answer.append(s.find("div",class_="card__content").find("span",class_="card__title-text").text)
+        answer.append(s["href"])
+
+        answer.append(t.find("div",class_="card__content").find("span",class_="card__title-text").text)
+        answer.append(t["href"])
+
+        return answer
+
+    except:
+        answer = []
+        return answer  
