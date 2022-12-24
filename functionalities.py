@@ -82,7 +82,7 @@ def basic(event):
     '''
     born = GetBirthDay(soup)
     Education = GetEducation(soup)
-    age = 2022 - "born"[:3]
+    age = 2022 - int(born[:3])
     messages = []
 
     with open('static/basicJson.txt', 'r', encoding='UTF-8') as f:
