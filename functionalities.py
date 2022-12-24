@@ -80,8 +80,9 @@ def basic(event):
     '''
         傳送基本資料訊息
     '''
-    height, weight, born, nationality, spouse = "180", "61", GetBirthDay(
-        soup), "台灣", "無"
+    born = GetBirthDay(soup)
+    Education = GetEducation(soup)
+    age = 2022 - "born"[:3]
     messages = []
 
     with open('static/basicJson.txt', 'r', encoding='UTF-8') as f:
@@ -90,11 +91,9 @@ def basic(event):
 
     message['hero']['url'] = celebImageURL
     message['body']['contents'][0]['text'] = celebName
-    message['body']['contents'][1]['contents'][0]['contents'][1]['text'] = height
-    message['body']['contents'][1]['contents'][1]['contents'][1]['text'] = weight
-    message['body']['contents'][1]['contents'][2]['contents'][1]['text'] = born
-    message['body']['contents'][1]['contents'][3]['contents'][1]['text'] = nationality
-    message['body']['contents'][1]['contents'][4]['contents'][1]['text'] = spouse
+    message['body']['contents'][1]['contents'][0]['contents'][1]['text'] = born
+    message['body']['contents'][1]['contents'][1]['contents'][1]['text'] = Education
+    message['body']['contents'][1]['contents'][2]['contents'][1]['text'] = age
 
     flexMessage = FlexSendMessage(
         alt_text='hi',

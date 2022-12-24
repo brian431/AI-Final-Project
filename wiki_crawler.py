@@ -108,3 +108,11 @@ def getNews(Name):
     except:
         answer = []
         return answer  
+
+def GetEducation(soup):
+    try:
+        a = soup.find("table",class_="infobox biography vcard").find("tbody").findChildren("td")[2]
+        a = a.find("a").text
+        return a
+    except:
+        return ""

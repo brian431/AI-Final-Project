@@ -37,7 +37,7 @@
               "contents": [
                 {
                   "type": "text",
-                  "text": "身高:",
+                  "text": "生日:",
                   "color": "#666666",
                   "size": "lg",
                   "flex": 1,
@@ -61,7 +61,7 @@
               "contents": [
                 {
                   "type": "text",
-                  "text": "體重:",
+                  "text": "學歷:",
                   "color": "#666666",
                   "size": "lg",
                   "flex": 1,
@@ -85,7 +85,7 @@
               "contents": [
                 {
                   "type": "text",
-                  "text": "出生:",
+                  "text": "年紀:",
                   "color": "#666666",
                   "size": "lg",
                   "flex": 1,
@@ -101,51 +101,6 @@
                 }
               ]
             },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "國籍:",
-                  "color": "#666666",
-                  "size": "lg",
-                  "flex": 1,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "暫無資訊",
-                  "wrap": true,
-                  "color": "#666666",
-                  "size": "lg",
-                  "flex": 4
-                }
-              ]
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "配偶:",
-                  "color": "#666666",
-                  "size": "lg",
-                  "flex": 1,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "暫無資訊",
-                  "wrap": true,
-                  "color": "#666666",
-                  "size": "lg",
-                  "flex": 4
-                }
-              ]
             }
           ]
         }
