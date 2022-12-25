@@ -43,7 +43,7 @@ def face_result(event):
     global celebName
     global celebImageURL
     global soup
-    celebName = "keanu_reeves"
+    celebName = "Keanu_Reeves"
     soup = BeautifulSoup(requests.get(
         GetWikiURL(celebName)).text, "html.parser")
     celebImageURL = GetWikiPhotoURL(soup)
@@ -80,9 +80,10 @@ def basic(event):
     '''
         傳送基本資料訊息
     '''
-    born = GetBirthDay(soup)
-    Education = GetEducation(soup)
-    age = 2022 - int(born[:3])
+    born = GetBirthDay(soup) if GetBirthDay(soup) != '' else '無'
+    Education = GetEducation(soup) if GetEducation(soup) != '' else '無' 
+    age = 2022 - int(born[:4])
+    nationality = GetNationality(soup) if GetNationality(soup) != '' else '無'
     messages = []
 
     with open('static/basicJson.txt', 'r', encoding='UTF-8') as f:
@@ -91,9 +92,11 @@ def basic(event):
 
     message['hero']['url'] = celebImageURL
     message['body']['contents'][0]['text'] = celebName
-    message['body']['contents'][1]['contents'][0]['contents'][1]['text'] = born
-    message['body']['contents'][1]['contents'][1]['contents'][1]['text'] = Education
-    message['body']['contents'][1]['contents'][2]['contents'][1]['text'] = age
+    print('1',born,'2', Education,'3', age)
+    message['body']['contents'][1]['contents'][0]['contents'][1]['text'] = str(born)
+    message['body']['contents'][1]['contents'][1]['contents'][1]['text'] = str(Education)
+    message['body']['contents'][1]['contents'][2]['contents'][1]['text'] = str(age)
+    message['body']['contents'][1]['contents'][3]['contents'][1]['text'] = str(nationality)
 
     flexMessage = FlexSendMessage(
         alt_text='hi',

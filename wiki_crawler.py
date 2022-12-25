@@ -116,3 +116,14 @@ def GetEducation(soup):
         return a
     except:
         return ""
+
+def GetNationality(soup):
+    try:
+        a = soup.find("table",class_="infobox biography vcard").find("tbody").find("td",class_="infobox-data category")
+        if(a!=None):
+            return a.text
+    except:
+        return ""
+
+if __name__ == '__main__':
+    print(GetLatestMovies(GetIMDbPersonID('robert downey jr')))
