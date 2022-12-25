@@ -1,6 +1,6 @@
 # import flask related
 from flask import Flask, request, abort, url_for
-from urllib.parse import parse_qsl, parse_qs
+# from urllib.parse import parse_qsl, parse_qs
 import random
 from linebot.models import events
 from lineBot_api import *
@@ -14,22 +14,22 @@ app = Flask(__name__)
 
 @app.route("/callback", methods=['POST'])
 def callback():
-    '''
-        這些不會用到
-    '''
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
+
     # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
 
     # handle webhook body
     try:
+        print('receive msg')
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
     return 'OK'
+
 
 
 @handler.add(FollowEvent)

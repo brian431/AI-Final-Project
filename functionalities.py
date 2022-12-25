@@ -1,7 +1,7 @@
 from lineBot_api import *
 from flask import url_for
 from wiki_crawler import *
-
+from celeb import recognize
 import json
 
 # 共用變數
@@ -43,10 +43,12 @@ def face_result(event):
     global celebName
     global celebImageURL
     global soup
-    celebName = "Keanu_Reeves"
+    celebName = recognize()
+    # celebName = "keanu reeves"
+    print(celebName)
     soup = BeautifulSoup(requests.get(
         GetWikiURL(celebName)).text, "html.parser")
-    celebImageURL = GetWikiPhotoURL(soup)
+    celebImageURL = 'https://www.macmillandictionary.com/us/external/slideshow/full/Grey_full.png' if GetWikiPhotoURL(soup) == '' else GetWikiPhotoURL(soup)
     buttonsMessage = TemplateSendMessage(
         alt_text='Buttons template',
         template=ButtonsTemplate(
@@ -73,8 +75,9 @@ def face_result(event):
             ]
         )
     )
+    print(celebName)
     line_bot_api.reply_message(event.reply_token, buttonsMessage)
-
+    print(celebName)
 
 def basic(event):
     '''

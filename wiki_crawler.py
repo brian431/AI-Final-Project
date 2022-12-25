@@ -24,8 +24,11 @@ def GetWikiURL(name):
 
 def GetWikiPhotoURL(soup):
     
-    a = soup.find("table",class_="infobox biography vcard").findChild("td",class_="infobox-image").findChild("a").findChild("img")
-    return "https:"+a["src"]
+    try:
+        a = soup.find("table",class_="infobox biography vcard").findChild("td",class_="infobox-image").findChild("a").findChild("img")
+        return "https:"+a["src"]
+    except:
+        return ''
 
 def GetBirthDay(soup):
     return soup.find('span', class_ = 'bday').contents[0]
@@ -126,4 +129,4 @@ def GetNationality(soup):
         return ""
 
 if __name__ == '__main__':
-    print(GetLatestMovies(GetIMDbPersonID('robert downey jr')))
+    print(GetWikiURL('Roshumba_Williams'))
