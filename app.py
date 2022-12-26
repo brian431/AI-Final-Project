@@ -54,14 +54,14 @@ def handle_message(event):
         face_result(event)
     if event.message.type == 'text':
         command = event.message.text
-        if command == basicStr:
-            basic(event)
-        elif command == filmStr:
-            film(event)
-        elif command == socialStr:
-            social(event)
-        elif command == newsStr:
-            news(event)
+        if command[0] == '告':
+            basic(event, command[3: command.index('的')])
+        elif command[0] == '真':
+            film(event, command[4: command.index('最')])
+        elif command[0] == '我':
+            social(event, command[2: command.index('的')])
+        elif command[0] == '看':
+            news(event, command[2: command.index('的')])
         else:
             sorry(event)
 

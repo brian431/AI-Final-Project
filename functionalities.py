@@ -5,11 +5,11 @@ from celeb import recognize
 import json
 
 # 共用變數
-celebName = '無'
-basicStr = '告訴我他的基本資料ㄅ'
-filmStr = '真想知道他最近演了什麼...'
-socialStr = '哀居拿來!'
-newsStr = '八卦一下好了'
+celebName = ''
+basicStr = f'告訴我{celebName}的基本資料ㄅ'
+filmStr = f'真想知道{celebName}最近演了什麼...'
+socialStr = f'我要{celebName}的推特!'
+newsStr = f'看看{celebName}的新聞'
 
 celebImageURL = ""
 soup = BeautifulSoup()
@@ -40,12 +40,12 @@ def face_result(event):
     '''
         傳送辨識完成後的訊息
     '''
-    global celebName
-    global celebImageURL
-    global soup
     celebName = recognize()
-    # celebName = "keanu reeves"
     print(celebName)
+    if celebName == '' or '\\' in celebName:
+        celebName = ''
+        sorry(event)
+        return
     soup = BeautifulSoup(requests.get(
         GetWikiURL(celebName)).text, "html.parser")
     celebImageURL = 'https://www.macmillandictionary.com/us/external/slideshow/full/Grey_full.png' if GetWikiPhotoURL(soup) == '' else GetWikiPhotoURL(soup)
@@ -58,31 +58,33 @@ def face_result(event):
             actions=[
                 MessageAction(
                     label='基本資料',
-                    text=basicStr
+                    text=f'告訴我{celebName}的基本資料ㄅ'
                 ),
                 MessageAction(
                     label='最新作品',
-                    text=filmStr
+                    text=f'真想知道{celebName}最近演了什麼...'
                 ),
                 MessageAction(
                     label='社群軟體',
-                    text=socialStr
+                    text=f'我要{celebName}的推特!'
                 ),
                 MessageAction(
                     label='最近新聞',
-                    text=newsStr
+                    text=f'看看{celebName}的新聞'
                 )
             ]
         )
     )
-    print(celebName)
     line_bot_api.reply_message(event.reply_token, buttonsMessage)
-    print(celebName)
 
-def basic(event):
+def basic(event, celebName):
     '''
         傳送基本資料訊息
     '''
+    print('basic', celebName)
+    soup = BeautifulSoup(requests.get(
+        GetWikiURL(celebName)).text, "html.parser")
+    celebImageURL = 'https://www.macmillandictionary.com/us/external/slideshow/full/Grey_full.png' if GetWikiPhotoURL(soup) == '' else GetWikiPhotoURL(soup)
     born = GetBirthDay(soup) if GetBirthDay(soup) != '' else '無'
     Education = GetEducation(soup) if GetEducation(soup) != '' else '無' 
     age = 2022 - int(born[:4])
@@ -105,15 +107,35 @@ def basic(event):
         alt_text='hi',
         contents=message
     )
+    
+
+    quickReplyMessage = TextSendMessage(
+        text='你還想要知道什麼關於他的什麼嗎??',
+        quick_reply=QuickReply(
+            items=[
+                QuickReplyButton(
+                    action=MessageAction(label='基本資料', text=f'告訴我{celebName}的基本資料ㄅ')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='出演作品', text=f'真想知道{celebName}最近演了什麼...')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='社群軟體', text=f'我要{celebName}的推特!')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='最近新聞', text=f'看看{celebName}的新聞')
+                )
+            ]
+        )
+    )
     messages.extend([flexMessage, quickReplyMessage])
     line_bot_api.reply_message(event.reply_token, messages)
 
 
-def film(event):
+def film(event, celebName):
     '''
         傳送出演作品訊息
     '''
-    imdb.Movie.Movie
     filmURL, filmTitle, filmYear = [], [], []
     movies = GetLatestMovies(GetIMDbPersonID(celebName))
     for i in range(0, 3):
@@ -154,11 +176,32 @@ def film(event):
         alt_text='hi',
         contents=message
     )
+
+    quickReplyMessage = TextSendMessage(
+        text='你還想要知道什麼關於他的什麼嗎??',
+        quick_reply=QuickReply(
+            items=[
+                QuickReplyButton(
+                    action=MessageAction(label='基本資料', text=f'告訴我{celebName}的基本資料ㄅ')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='出演作品', text=f'真想知道{celebName}最近演了什麼...')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='社群軟體', text=f'我要{celebName}的推特!')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='最近新聞', text=f'看看{celebName}的新聞')
+                )
+            ]
+        )
+    )
+
     messages.extend([flexMessage, quickReplyMessage])
     line_bot_api.reply_message(event.reply_token, messages)
 
 
-def social(event):
+def social(event, celebName):
     '''
         傳送社交軟體訊息
     '''
@@ -185,11 +228,32 @@ def social(event):
             ]
         )
     )
+
+    quickReplyMessage = TextSendMessage(
+        text='你還想要知道什麼關於他的什麼嗎??',
+        quick_reply=QuickReply(
+            items=[
+                QuickReplyButton(
+                    action=MessageAction(label='基本資料', text=f'告訴我{celebName}的基本資料ㄅ')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='出演作品', text=f'真想知道{celebName}最近演了什麼...')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='社群軟體', text=f'我要{celebName}的推特!')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='最近新聞', text=f'看看{celebName}的新聞')
+                )
+            ]
+        )
+    )
+
     messages.extend([image_carousel_template_message, quickReplyMessage])
     line_bot_api.reply_message(event.reply_token, messages)
 
 
-def news(event):
+def news(event, celebName):
     '''
         傳送最近新聞訊息
     '''
@@ -228,6 +292,26 @@ def news(event):
         )
     )
 
+    quickReplyMessage = TextSendMessage(
+        text='你還想要知道什麼關於他的什麼嗎??',
+        quick_reply=QuickReply(
+            items=[
+                QuickReplyButton(
+                    action=MessageAction(label='基本資料', text=f'告訴我{celebName}的基本資料ㄅ')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='出演作品', text=f'真想知道{celebName}最近演了什麼...')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='社群軟體', text=f'我要{celebName}的推特!')
+                ),
+                QuickReplyButton(
+                    action=MessageAction(label='最近新聞', text=f'看看{celebName}的新聞')
+                )
+            ]
+        )
+    )
+
     messages.extend([buttons_template_message, quickReplyMessage])
     line_bot_api.reply_message(event.reply_token, messages)
 
@@ -236,11 +320,4 @@ def sorry(event):
     '''
         傳送抱歉訊息
     '''
-    messages=[]
-    if celebName != '無':
-        textMessage=TextMessage(text='我聽不懂，再說一次啦')
-        messages.append(textMessage)
-        messages.append(quickReplyMessage)
-        line_bot_api.reply_message(event.reply_token, messages)
-    else:
-        line_bot_api.reply_message(event.reply_token, TextMessage(text='請傳送圖片歐'))
+    line_bot_api.reply_message(event.reply_token, TextMessage(text='請傳送明星圖片歐'))
